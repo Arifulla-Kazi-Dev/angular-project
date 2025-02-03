@@ -1,0 +1,148 @@
+<div class="min-h-screen bg-gradient-to-br from-gray-800 via-gray-900 to-black text-white font-sans">
+  <div class="container mx-auto px-4 py-8">
+    <!-- Intro Section -->
+    <div class="intro text-center" *ngIf="!isUserDetailsSet">
+      <h1 class="text-4xl font-bold text-green-400 animate-fadeIn">Welcome to Expense Tracker</h1>
+      <p class="mt-2 text-lg text-gray-300">Enter your details to get started:</p>
+      <div class="mt-6 space-y-4">
+        <input
+          type="text"
+          placeholder="Enter your name"
+          [(ngModel)]="userName"
+          autocomplete="off"
+          class="w-full max-w-md mx-auto p-3 bg-gray-700 text-white rounded border border-gray-600 focus:ring focus:ring-green-400 transition-all"
+          [class.invalid]="userName.trim().length < 2"
+        />
+        <input
+          type="number"
+          placeholder="Set your budget"
+          [(ngModel)]="budget"
+          autocomplete="off"
+          class="w-full max-w-md mx-auto p-3 bg-gray-700 text-white rounded border border-gray-600 focus:ring focus:ring-green-400 transition-all"
+          [class.invalid]="budget <= 0"
+        />
+        <button 
+          (click)="setUserDetails()"
+          class="px-6 py-2 bg-green-400 text-black rounded shadow hover:bg-green-500 transform hover:scale-105 transition-all duration-300"
+        >
+          Start
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Section -->
+    <div class="main" *ngIf="isUserDetailsSet">
+      <h1 class="text-3xl font-semibold text-center text-green-400 animate-bounce">Hello, {{ userName }}</h1>
+      
+      <!-- Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+        <div class="stat-box bg-gradient-to-r from-green-400 to-green-600 p-4 rounded shadow-md text-center">
+          <p class="text-lg font-bold">Budget</p>
+          <p class="text-2xl">₹{{ budget | number:'1.0-0' }}</p>
+        </div>
+        <div class="stat-box bg-gradient-to-r from-red-400 to-red-600 p-4 rounded shadow-md text-center">
+          <p class="text-lg font-bold">Total Expenses</p>
+          <p class="text-2xl">₹{{ totalExpenses | number:'1.0-0' }}</p>
+        </div>
+        <div class="stat-box bg-gradient-to-r from-blue-400 to-blue-600 p-4 rounded shadow-md text-center">
+          <p class="text-lg font-bold">Remaining Budget</p>
+          <p class="text-2xl">₹{{ remainingBudget | number:'1.0-0' }}</p>
+        </div>
+        <div class="stat-box bg-gradient-to-r from-purple-400 to-purple-600 p-4 rounded shadow-md text-center">
+          <p class="text-lg font-bold">Budget Utilization</p>
+          <p class="text-2xl">{{ budgetUtilization }}%</p>
+        </div>
+        <div class="stat-box bg-gradient-to-r from-yellow-400 to-yellow-600 p-4 rounded shadow-md text-center">
+          <p class="text-lg font-bold">Top Category</p>
+          <p class="text-2xl">{{ topCategory }}</p>
+        </div>
+      </div>
+
+      <!-- Add Transaction -->
+      <div class="form mt-8">
+        <h2 class="text-xl font-semibold text-center mb-4">Add a Transaction</h2>
+        <div class="max-w-md mx-auto space-y-4">
+          <input
+            type="text"
+            placeholder="Description"
+            [(ngModel)]="newTransaction.description"
+            autocomplete="off"
+            class="w-full p-3 bg-gray-700 text-white rounded border border-gray-600 focus:ring focus:ring-blue-400 transition-all"
+            [class.invalid]="newTransaction.description.trim().length < 2"
+          />
+          <input
+            type="number"
+            placeholder="Amount"
+            [(ngModel)]="newTransaction.amount"
+            autocomplete="off"
+            class="w-full p-3 bg-gray-700 text-white rounded border border-gray-600 focus:ring focus:ring-blue-400 transition-all"
+            [class.invalid]="newTransaction.amount <= 0"
+          />
+          <button 
+            (click)="addTransaction()"
+            [disabled]="!newTransaction.description.trim() || newTransaction.amount <= 0"
+            class="w-full px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600 transform hover:scale-105 transition-all duration-300"
+          >
+            Add Transaction
+          </button>
+        </div>
+      </div>
+
+      <!-- Transaction History -->
+      <div class="transaction-list mt-8">
+        <h2 class="text-xl font-semibold text-center mb-4">Transaction History</h2>
+        <ul class="space-y-3 max-w-md mx-auto">
+          <li 
+            *ngFor="let transaction of transactions; let i = index" 
+            class="bg-gray-700 p-3 rounded shadow transition-transform hover:scale-105"
+          >
+            {{ transaction.time }} - {{ transaction.description }}: ₹{{ transaction.amount | number:'1.0-0' }}
+          </li>
+        </ul>
+        <p *ngIf="transactions.length === 0" class="text-center text-gray-400 mt-4">
+          No transactions yet. Add your first transaction above.
+        </p>
+      </div>
+
+      <!-- Actions -->
+      <div class="actions flex justify-center gap-4 mt-8">
+        <button 
+          (click)="resetAllData()"
+          class="px-4 py-2 bg-red-500 text-white rounded shadow hover:bg-red-600 transform hover:scale-105 transition-all duration-300"
+        >
+          Reset All Data
+        </button>
+        <button 
+          (click)="viewInsights()"
+          class="px-4 py-2 bg-purple-500 text-white rounded shadow hover:bg-purple-600 transform hover:scale-105 transition-all duration-300"
+        >
+          View Insights
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+
+<!-- Update Budget -->
+<div class="update-budget mt-10 text-center">
+  <h2 class="text-2xl font-bold text-green-400 animate-fadeIn">Update Budget</h2>
+  <div class="max-w-md mx-auto mt-6 space-y-4">
+    <input
+      type="number"
+      placeholder="Enter New Budget"
+      [(ngModel)]="newBudget"
+      autocomplete="off"
+      class="w-full p-3 bg-gray-700 text-white rounded border border-gray-600 focus:ring focus:ring-green-400 transition-all"
+      [class.invalid]="newBudget <= 0"
+    />
+    <button
+      (click)="updateBudget()"
+      [disabled]="newBudget <= 0"
+      class="w-full px-4 py-2 bg-green-500 text-black font-semibold rounded shadow hover:bg-green-600 transform hover:scale-105 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      Update Budget
+    </button>
+  </div>
+</div>
+</div>

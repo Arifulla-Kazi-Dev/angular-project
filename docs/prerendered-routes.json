@@ -1,0 +1,11 @@
+{
+  "routes": {
+    "/angular-project": {},
+    "/angular-project/budget": {},
+    "/angular-project/expenses": {},
+    "/angular-project/insights": {},
+    "/angular-project/login": {},
+    "/angular-project/profile": {},
+    "/angular-project/register": {}
+  }
+}

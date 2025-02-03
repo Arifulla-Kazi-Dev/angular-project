@@ -137,33 +137,40 @@ export class HomeComponent implements OnInit {
   }
 
   // LocalStorage Methods
-  saveData() {
-    const data = {
-      userName: this.userName,
-      budget: this.budget,
-      totalExpenses: this.totalExpenses,
-      remainingBudget: this.remainingBudget,
-      transactions: this.transactions,
-      isUserDetailsSet: this.isUserDetailsSet,
-    };
-    localStorage.setItem('expenseTrackerData', JSON.stringify(data));
-  }
-
   loadData() {
-    const savedData = localStorage.getItem('expenseTrackerData');
-    if (savedData) {
-      const data = JSON.parse(savedData);
-      this.userName = data.userName || '';
-      this.budget = data.budget || 0;
-      this.totalExpenses = data.totalExpenses || 0;
-      this.remainingBudget = data.remainingBudget || 0;
-      this.transactions = data.transactions || [];
-      this.isUserDetailsSet = data.isUserDetailsSet || false;
-      this.calculateBudget(); // Ensure budget calculations are consistent
+    if (typeof window !== 'undefined' && localStorage) {
+      const savedData = localStorage.getItem('expenseTrackerData');
+      if (savedData) {
+        const data = JSON.parse(savedData);
+        this.userName = data.userName || '';
+        this.budget = data.budget || 0;
+        this.totalExpenses = data.totalExpenses || 0;
+        this.remainingBudget = data.remainingBudget || 0;
+        this.transactions = data.transactions || [];
+        this.isUserDetailsSet = data.isUserDetailsSet || false;
+        this.calculateBudget(); // Ensure budget calculations are consistent
+      }
     }
   }
-
-  clearData() {
-    localStorage.removeItem('expenseTrackerData');
+  
+  saveData() {
+    if (typeof window !== 'undefined' && localStorage) {
+      const data = {
+        userName: this.userName,
+        budget: this.budget,
+        totalExpenses: this.totalExpenses,
+        remainingBudget: this.remainingBudget,
+        transactions: this.transactions,
+        isUserDetailsSet: this.isUserDetailsSet,
+      };
+      localStorage.setItem('expenseTrackerData', JSON.stringify(data));
+    }
   }
+  
+  clearData() {
+    if (typeof window !== 'undefined' && localStorage) {
+      localStorage.removeItem('expenseTrackerData');
+    }
+  }
+  
 }
